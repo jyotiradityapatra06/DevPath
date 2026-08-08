@@ -5,8 +5,16 @@ from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
 from app.database.connection import Base
-from app.models.user import User  # noqa: F401 - registers model metadata
-
+from app.models import (
+    CareerGoal,
+    Profile,
+    Progress,
+    Roadmap,
+    RoadmapStep,
+    Skill,
+    User,
+    UserSkill,
+)
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))

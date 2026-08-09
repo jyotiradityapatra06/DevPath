@@ -9,6 +9,7 @@ from app.models import (
     CareerGoal,
     LearningResource,
     Profile,
+    PersonalizedRecommendation,
     Progress,
     Roadmap,
     RoadmapStep,

@@ -10,8 +10,10 @@ from app.models.role import Role
 from app.models.role_skill import RoleSkill
 from app.models.skill_gap import SkillGap
 from app.models.learning_resource import LearningResource
+from app.models.personalization import PersonalizedRecommendation
 
 __all__ = [
     "CareerGoal", "LearningResource", "Profile", "Progress", "Roadmap", "RoadmapStep",
-    "Role", "RoleSkill", "Skill", "SkillGap", "User", "UserSkill",
+    "PersonalizedRecommendation", "Role", "RoleSkill", "Skill", "SkillGap",
+    "User", "UserSkill",
 ]

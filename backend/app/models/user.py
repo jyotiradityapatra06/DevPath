@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from app.models.skill_gap import SkillGap
     from app.models.user_skill import UserSkill
     from app.models.progress import Progress
+    from app.models.personalization import PersonalizedRecommendation
 
 
 class User(Base):
@@ -71,4 +72,10 @@ class User(Base):
 
     skill_gaps: Mapped[list["SkillGap"]] = relationship(
         "SkillGap", back_populates="user", cascade="all, delete-orphan"
+    )
+
+    personalized_recommendations: Mapped[list["PersonalizedRecommendation"]] = relationship(
+        "PersonalizedRecommendation",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )

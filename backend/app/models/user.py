@@ -1,9 +1,15 @@
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
+
+if TYPE_CHECKING:
+    from app.models.profile import Profile
+    from app.models.user_skill import UserSkill
+    from app.models.progress import Progress
 
 
 class User(Base):
@@ -13,19 +19,19 @@ class User(Base):
 
     name: Mapped[str] = mapped_column(
         String(255),
-        nullable=False
+        nullable=False,
     )
 
     email: Mapped[str] = mapped_column(
         String(320),
         unique=True,
         index=True,
-        nullable=False
+        nullable=False,
     )
 
     password_hash: Mapped[str] = mapped_column(
         String(255),
-        nullable=False
+        nullable=False,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -35,24 +41,23 @@ class User(Base):
         nullable=False,
     )
 
-
     # Phase 2 relationships
 
     profile: Mapped["Profile | None"] = relationship(
         "Profile",
         back_populates="user",
         uselist=False,
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )
 
     user_skills: Mapped[list["UserSkill"]] = relationship(
         "UserSkill",
         back_populates="user",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )
 
     progress: Mapped[list["Progress"]] = relationship(
         "Progress",
         back_populates="user",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )

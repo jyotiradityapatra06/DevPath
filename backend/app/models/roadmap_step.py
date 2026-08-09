@@ -1,7 +1,13 @@
-from sqlalchemy import String, Text, ForeignKey
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
+
+if TYPE_CHECKING:
+    from app.models.roadmap import Roadmap
+    from app.models.progress import Progress
 
 
 class RoadmapStep(Base):
@@ -11,31 +17,30 @@ class RoadmapStep(Base):
 
     roadmap_id: Mapped[int] = mapped_column(
         ForeignKey("roadmaps.id"),
-        nullable=False
+        nullable=False,
     )
 
     title: Mapped[str] = mapped_column(
         String(255),
-        nullable=False
+        nullable=False,
     )
 
     description: Mapped[str | None] = mapped_column(
         Text,
-        nullable=True
+        nullable=True,
     )
 
     order: Mapped[int] = mapped_column(
-        nullable=False
+        nullable=False,
     )
-
 
     roadmap: Mapped["Roadmap"] = relationship(
         "Roadmap",
-        back_populates="steps"
+        back_populates="steps",
     )
 
     progress: Mapped[list["Progress"]] = relationship(
         "Progress",
         back_populates="step",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
     )

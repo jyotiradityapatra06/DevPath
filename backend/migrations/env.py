@@ -7,10 +7,14 @@ from app.config import settings
 from app.database.connection import Base
 from app.models import (
     CareerGoal,
+    LearningResource,
     Profile,
     Progress,
     Roadmap,
     RoadmapStep,
+    Role,
+    RoleSkill,
+    SkillGap,
     Skill,
     User,
     UserSkill,

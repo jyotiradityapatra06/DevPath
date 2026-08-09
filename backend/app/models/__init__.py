@@ -6,3 +6,12 @@ from app.models.user_skill import UserSkill
 from app.models.roadmap import Roadmap
 from app.models.roadmap_step import RoadmapStep
 from app.models.progress import Progress
+from app.models.role import Role
+from app.models.role_skill import RoleSkill
+from app.models.skill_gap import SkillGap
+from app.models.learning_resource import LearningResource
+
+__all__ = [
+    "CareerGoal", "LearningResource", "Profile", "Progress", "Roadmap", "RoadmapStep",
+    "Role", "RoleSkill", "Skill", "SkillGap", "User", "UserSkill",
+]

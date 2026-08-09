@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.connection import Base
 
 if TYPE_CHECKING:
+    from app.models.career_goal import CareerGoal
     from app.models.roadmap_step import RoadmapStep
 
 
@@ -33,4 +34,7 @@ class Roadmap(Base):
         "RoadmapStep",
         back_populates="roadmap",
         cascade="all, delete-orphan",
+    )
+    career_goal: Mapped["CareerGoal"] = relationship(
+        "CareerGoal", back_populates="roadmaps"
     )

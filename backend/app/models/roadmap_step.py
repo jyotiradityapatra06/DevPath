@@ -8,6 +8,7 @@ from app.database.connection import Base
 if TYPE_CHECKING:
     from app.models.roadmap import Roadmap
     from app.models.progress import Progress
+    from app.models.skill import Skill
 
 
 class RoadmapStep(Base):
@@ -34,6 +35,12 @@ class RoadmapStep(Base):
         nullable=False,
     )
 
+    skill_id: Mapped[int | None] = mapped_column(
+        ForeignKey("skills.id"), nullable=True, index=True
+    )
+    week_number: Mapped[int | None] = mapped_column(nullable=True)
+    estimated_hours: Mapped[int | None] = mapped_column(nullable=True)
+
     roadmap: Mapped["Roadmap"] = relationship(
         "Roadmap",
         back_populates="steps",
@@ -43,4 +50,7 @@ class RoadmapStep(Base):
         "Progress",
         back_populates="step",
         cascade="all, delete-orphan",
+    )
+    skill: Mapped["Skill | None"] = relationship(
+        "Skill", back_populates="roadmap_steps"
     )

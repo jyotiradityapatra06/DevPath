@@ -7,7 +7,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database.connection import Base
 
 if TYPE_CHECKING:
+    from app.models.career_goal import CareerGoal
     from app.models.profile import Profile
+    from app.models.skill_gap import SkillGap
     from app.models.user_skill import UserSkill
     from app.models.progress import Progress
 
@@ -60,4 +62,13 @@ class User(Base):
         "Progress",
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+
+    career_goals: Mapped[list["CareerGoal"]] = relationship(
+        "CareerGoal",
+        back_populates="user",
+    )
+
+    skill_gaps: Mapped[list["SkillGap"]] = relationship(
+        "SkillGap", back_populates="user", cascade="all, delete-orphan"
     )

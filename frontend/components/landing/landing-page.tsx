@@ -1,29 +1,25 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
 import {
   ArrowRight,
   BarChart3,
-  Bot,
   BrainCircuit,
   Check,
   ChevronRight,
-  Code2,
   Compass,
-  Database,
-  GitBranch,
   Menu,
   Route,
-  ShieldCheck,
   Sparkles,
   Target,
   X,
 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { BrandMark } from "@/components/shared/brand-mark"
+import { CareerNetwork } from "@/components/hero/CareerNetwork"
 import { cn } from "@/lib/utils"
+import { initializeLandingAnimations } from "@/src/animations"
 
 const navLinks = [
   { label: "Product", href: "#product" },
@@ -79,18 +75,7 @@ const stories = [
 ]
 
 function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
-  const reduceMotion = useReducedMotion()
-  return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  )
+  return <div className={className} data-scroll-reveal>{children}</div>
 }
 
 function LandingNavbar() {
@@ -115,37 +100,10 @@ function LandingNavbar() {
 
 function IntelligenceVisual() {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.28, duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="relative mx-auto mt-16 max-w-5xl lg:mt-20">
-      <div className="absolute -inset-14 rounded-full bg-[#8B5CF6]/12 blur-3xl" />
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#111113]/90 p-3 shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85)] backdrop-blur-xl sm:p-5">
-        <div className="flex items-center justify-between border-b border-white/[0.07] px-2 pb-4">
-          <div className="flex items-center gap-2"><span className="size-2 rounded-full bg-[#10B981] shadow-[0_0_14px_#10B981]" /><span className="text-xs font-medium text-[#A1A1AA]">Career intelligence · Live context</span></div>
-          <div className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-white/20" /><span className="size-1.5 rounded-full bg-white/20" /><span className="size-1.5 rounded-full bg-white/20" /></div>
-        </div>
-        <div className="grid gap-4 pt-4 md:grid-cols-[1fr_18rem]">
-          <div className="relative min-h-[28rem] overflow-hidden rounded-2xl border border-white/[0.07] bg-[#09090B] sm:min-h-[32rem]">
-            <div className="landing-grid absolute inset-0 opacity-65" />
-            <div className="intelligence-node absolute left-[10%] top-[18%] rounded-xl border border-white/10 bg-[#18181B] px-3 py-2 text-xs text-[#A1A1AA]"><Code2 className="mb-2 size-4 text-[#10B981]" />API Design</div>
-            <div className="intelligence-node absolute right-[9%] top-[13%] rounded-xl border border-white/10 bg-[#18181B] px-3 py-2 text-xs text-[#A1A1AA]"><Database className="mb-2 size-4 text-[#10B981]" />Databases</div>
-            <div className="intelligence-node absolute bottom-[16%] left-[8%] rounded-xl border border-white/10 bg-[#18181B] px-3 py-2 text-xs text-[#A1A1AA]"><GitBranch className="mb-2 size-4 text-[#F59E0B]" />Systems</div>
-            <div className="intelligence-node absolute bottom-[19%] right-[7%] rounded-xl border border-white/10 bg-[#18181B] px-3 py-2 text-xs text-[#A1A1AA]"><ShieldCheck className="mb-2 size-4 text-[#F59E0B]" />Deployment</div>
-            <div className="absolute left-[16%] top-[30%] h-px w-[30%] origin-left rotate-[22deg] bg-gradient-to-r from-[#10B981]/20 to-[#8B5CF6]/70" />
-            <div className="absolute right-[17%] top-[29%] h-px w-[28%] origin-right -rotate-[26deg] bg-gradient-to-l from-[#10B981]/20 to-[#8B5CF6]/70" />
-            <div className="absolute bottom-[29%] left-[17%] h-px w-[30%] origin-left -rotate-[25deg] bg-gradient-to-r from-[#F59E0B]/20 to-[#8B5CF6]/70" />
-            <div className="absolute bottom-[31%] right-[16%] h-px w-[29%] origin-right rotate-[25deg] bg-gradient-to-l from-[#F59E0B]/20 to-[#8B5CF6]/70" />
-            <div className="absolute left-1/2 top-1/2 grid size-40 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#8B5CF6]/45 bg-[#8B5CF6]/10 shadow-[0_0_70px_rgba(139,92,246,0.28)] sm:size-48">
-              <div className="grid size-28 place-items-center rounded-full border border-[#8B5CF6]/70 bg-[#18181B] text-center sm:size-32"><Compass className="mx-auto size-6 text-[#8B5CF6]" /><div><p className="text-[10px] uppercase tracking-[0.18em] text-[#71717A]">Direction</p><p className="mt-1 text-sm font-semibold text-white">Backend Engineer</p></div></div>
-            </div>
-            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-xl border border-white/[0.08] bg-[#18181B]/85 px-4 py-3 backdrop-blur"><Sparkles className="size-4 shrink-0 text-[#8B5CF6]" /><p className="text-xs leading-5 text-[#A1A1AA]"><span className="font-medium text-white">AI insight:</span> Deployment is the highest-impact next capability.</p></div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1">
-            <div className="rounded-2xl border border-white/[0.07] bg-[#18181B] p-5"><p className="text-xs uppercase tracking-[0.16em] text-[#71717A]">Role readiness</p><div className="mt-5 flex items-end justify-between"><span className="text-4xl font-semibold tracking-[-0.05em] text-white">68<span className="text-lg text-[#71717A]">%</span></span><span className="rounded-full bg-[#10B981]/10 px-2 py-1 text-[10px] font-medium text-[#34D399]">+8 this month</span></div><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"><div className="h-full w-[68%] rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#10B981]" /></div></div>
-            <div className="rounded-2xl border border-white/[0.07] bg-[#18181B] p-5"><div className="flex items-center justify-between"><p className="text-xs uppercase tracking-[0.16em] text-[#71717A]">Priority signal</p><Target className="size-4 text-[#F59E0B]" /></div><p className="mt-5 text-lg font-medium text-white">Production systems</p><p className="mt-2 text-xs leading-5 text-[#A1A1AA]">The clearest path from current skills to target-role readiness.</p><div className="mt-5 flex gap-1">{[1,2,3,4,5].map((item) => <span key={item} className={cn("h-1 flex-1 rounded-full", item < 5 ? "bg-[#F59E0B]" : "bg-white/10")} />)}</div></div>
-            <div className="rounded-2xl border border-[#8B5CF6]/20 bg-[#8B5CF6]/[0.07] p-5 sm:col-span-2 md:col-span-1"><Bot className="size-5 text-[#A78BFA]" /><p className="mt-4 text-sm font-medium text-white">Your path is connected.</p><p className="mt-2 text-xs leading-5 text-[#A1A1AA]">Every insight reflects your goals, gaps, roadmap, and progress.</p></div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+    <div data-hero-visual className="hero-visual relative min-w-0 lg:pl-4">
+      <div className="absolute inset-[12%] rounded-full bg-[#8B5CF6]/12 blur-3xl" />
+      <CareerNetwork />
+    </div>
   )
 }
 
@@ -157,24 +115,33 @@ function StoryVisual({ type }: { type: string }) {
 }
 
 export function LandingPage() {
+  const pageRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!pageRef.current) return
+    return initializeLandingAnimations(pageRef.current)
+  }, [])
+
   return (
-    <div className="dark min-h-screen overflow-hidden bg-[#09090B] text-[#FAFAFA] selection:bg-[#8B5CF6]/40">
+    <div ref={pageRef} className="landing-motion-root dark min-h-screen overflow-hidden bg-[#09090B] text-[#FAFAFA] selection:bg-[#8B5CF6]/40">
       <LandingNavbar />
       <main>
         <section className="relative px-4 pb-24 pt-40 sm:px-6 sm:pt-48 lg:pb-36">
           <div className="aurora-mesh absolute inset-0" /><div className="landing-grid absolute inset-0" />
-          <div className="relative mx-auto max-w-7xl">
-            <div className="mx-auto max-w-4xl text-center">
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-[#A1A1AA] backdrop-blur"><span className="size-1.5 rounded-full bg-[#10B981] shadow-[0_0_10px_#10B981]" />AI career intelligence, grounded in your progress</motion.div>
-              <motion.h1 initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.7 }} className="text-balance mt-8 text-5xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-7xl lg:text-[5.5rem]">Navigate your career <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#34D399] bg-clip-text text-transparent">with intelligence.</span></motion.h1>
-              <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16, duration: 0.7 }} className="text-balance mx-auto mt-7 max-w-2xl text-base leading-7 text-[#A1A1AA] sm:text-lg sm:leading-8">DevPath uses AI-powered career analysis to understand your skills, identify gaps, and build a personalized growth path.</motion.p>
-              <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.7 }} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"><Link href="/register" className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-semibold text-[#09090B] transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-[#8B5CF6]/20 sm:w-auto">Build your career path <ArrowRight className="size-4" /></Link><a href="#product" className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-white transition-colors hover:bg-white/[0.07] sm:w-auto">Explore the intelligence <ChevronRight className="size-4" /></a></motion.div>
+          <div data-network-root className="relative mx-auto max-w-7xl">
+            <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(30rem,1.08fr)] lg:gap-6">
+              <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
+                <div data-hero-badge className="hero-badge inline-flex flex-col items-center gap-5 lg:items-start"><BrandMark inverse href="/" /><span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-[#A1A1AA] backdrop-blur"><span className="size-1.5 rounded-full bg-[#22D3EE] shadow-[0_0_10px_#22D3EE]" />AI career intelligence, grounded in your progress</span></div>
+                <h1 data-hero-title className="hero-title text-balance mt-8 text-5xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-7xl lg:text-[4.75rem] xl:text-[5.25rem]"><span data-hero-line className="block">Navigate your career</span><span data-hero-line className="block">with <span className="hero-intelligence">intelligence.</span></span></h1>
+                <p data-hero-description className="hero-description text-balance mx-auto mt-7 max-w-2xl text-base leading-7 text-[#A1A1AA] sm:text-lg sm:leading-8 lg:mx-0">DevPath uses AI-powered career analysis to understand your skills, identify gaps, and build a personalized growth path.</p>
+                <div data-hero-buttons className="hero-buttons mt-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start"><Link data-hero-cta href="/register" className="hero-cta inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-white px-5 text-sm font-semibold text-[#09090B] transition-all hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#8B5CF6]/25 sm:w-auto">Build your career path <ArrowRight className="size-4" /></Link><a data-hero-cta href="#product" className="hero-cta inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-medium text-white transition-all hover:scale-[1.02] hover:border-[#A78BFA]/35 hover:bg-white/[0.07] hover:shadow-[0_0_28px_rgba(139,92,246,0.12)] sm:w-auto">Explore the intelligence <ChevronRight className="size-4" /></a></div>
+              </div>
+              <IntelligenceVisual />
             </div>
-            <IntelligenceVisual />
           </div>
         </section>
 
-        <section className="border-y border-white/[0.07] bg-[#111113]/65 px-4 py-8 sm:px-6"><div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 lg:grid-cols-4">{trustSignals.map(({ icon: Icon, label }) => <div key={label} className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.12em] text-[#71717A] sm:text-sm"><Icon className="size-4 text-[#A1A1AA]" />{label}</div>)}</div></section>
+        <section data-scroll-reveal className="border-y border-white/[0.07] bg-[#111113]/65 px-4 py-8 sm:px-6"><div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 lg:grid-cols-4">{trustSignals.map(({ icon: Icon, label }) => <div data-reveal-item key={label} className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.12em] text-[#71717A] sm:text-sm"><Icon className="size-4 text-[#A1A1AA]" />{label}</div>)}</div></section>
 
         <section id="product" className="px-4 py-28 sm:px-6 sm:py-36">
           <Reveal className="mx-auto max-w-7xl"><div className="max-w-3xl"><p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8B5CF6]">One connected intelligence layer</p><h2 className="text-balance mt-5 text-4xl font-semibold tracking-[-0.045em] text-white sm:text-6xl">Career growth is not a checklist. It is a system.</h2><p className="mt-6 max-w-2xl text-base leading-8 text-[#A1A1AA]">DevPath connects who you are, where you want to go, what you know, and what you have completed—then turns that context into direction.</p></div></Reveal>

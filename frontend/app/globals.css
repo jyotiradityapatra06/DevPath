@@ -156,18 +156,102 @@
     box-shadow: 0 24px 70px -42px rgb(139 92 246 / 0.35);
   }
 
-  .intelligence-node {
-    animation: intelligence-float 5.5s ease-in-out infinite;
+  .landing-motion-root [data-hero-badge],
+  .landing-motion-root [data-hero-title],
+  .landing-motion-root [data-hero-line],
+  .landing-motion-root [data-hero-description],
+  .landing-motion-root [data-hero-buttons],
+  .landing-motion-root [data-hero-visual],
+  .landing-motion-root [data-scroll-reveal],
+  .landing-motion-root [data-reveal-item] {
+    opacity: 0;
+  }
+
+  .landing-motion-root [data-motion-particle] {
     will-change: transform;
   }
 
-  .intelligence-node:nth-of-type(even) {
-    animation-delay: -2.2s;
+  .landing-motion-root [data-network-node],
+  .landing-motion-root [data-ai-orb],
+  .landing-motion-root [data-career-checkpoint],
+  .landing-motion-root [data-network-particle] {
+    opacity: 0;
+    will-change: transform, opacity;
   }
 
-  @keyframes intelligence-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+  .landing-motion-root [data-network-parallax] {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .landing-motion-root .aurora-mesh {
+    background-size: 115% 115%;
+    animation: hero-aurora-drift 18s ease-in-out infinite alternate;
+  }
+
+  .hero-intelligence {
+    background-image: linear-gradient(105deg, #c4b5fd 10%, #8b5cf6 38%, #e9d5ff 50%, #8b5cf6 62%, #a78bfa 90%);
+    background-size: 220% 100%;
+    background-position: 100% 50%;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 18px rgb(139 92 246 / 0.16));
+    animation: hero-gradient-shimmer 7s ease-in-out infinite;
+  }
+
+  .hero-cta {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hero-cta::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: "";
+    background: linear-gradient(110deg, transparent 20%, rgb(167 139 250 / 0.22) 46%, transparent 70%);
+    transform: translateX(-130%);
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero-cta:hover::after {
+    transform: translateX(130%);
+  }
+
+  [data-network-path] {
+    transition: stroke-width 280ms ease, filter 280ms ease;
+  }
+
+  [data-career-checkpoint] {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @keyframes hero-gradient-shimmer {
+    0%, 22% { background-position: 100% 50%; }
+    55%, 100% { background-position: 0% 50%; }
+  }
+
+  @keyframes hero-aurora-drift {
+    0% { background-position: 0% 0%; opacity: 0.82; }
+    100% { background-position: 7% 5%; opacity: 1; }
+  }
+}
+
+@media (max-width: 1023px) {
+  [data-network-node][data-node-id="system"],
+  [data-network-path][data-skill-id="system"],
+  [data-network-particle][data-path-id="path-system"] {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  [data-network-node][data-node-id="react"],
+  [data-network-path][data-skill-id="react"],
+  [data-network-particle][data-path-id="path-react"],
+  [data-ambient-particle]:nth-child(even) {
+    display: none;
   }
 }
 
@@ -178,5 +262,29 @@
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .landing-motion-root [data-hero-badge],
+  .landing-motion-root [data-hero-title],
+  .landing-motion-root [data-hero-line],
+  .landing-motion-root [data-hero-description],
+  .landing-motion-root [data-hero-buttons],
+  .landing-motion-root [data-hero-visual],
+  .landing-motion-root [data-scroll-reveal],
+  .landing-motion-root [data-reveal-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .landing-motion-root [data-network-node],
+  .landing-motion-root [data-ai-orb],
+  .landing-motion-root [data-career-checkpoint],
+  .landing-motion-root [data-network-particle] {
+    opacity: 1 !important;
+  }
+
+  .hero-intelligence,
+  .landing-motion-root .aurora-mesh {
+    animation: none !important;
   }
 }

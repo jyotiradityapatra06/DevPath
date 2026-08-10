@@ -49,7 +49,7 @@ function AnimatedMetric({ value, suffix }: { value: number; suffix: string }) {
   const rounded = useTransform(count, (latest) => `${Math.round(latest)}${suffix}`)
   useEffect(() => {
     const controls = animate(count, value, { duration: 0.75, ease: [0.22, 1, 0.36, 1] })
-    return controls.stop
+    return () => controls.stop()
   }, [count, value])
   return <motion.span className="tabular-nums">{rounded}</motion.span>
 }

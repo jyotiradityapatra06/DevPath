@@ -1,6 +1,11 @@
 import { ArrowRight, Bot, Sparkles } from "lucide-react"
 
-export function AIInsightCard() {
+interface AIInsightCardProps {
+  recommendations: string[]
+  focusArea: string
+}
+
+export function AIInsightCard({ recommendations, focusArea }: AIInsightCardProps) {
   return (
     <section id="ai-coach" className="relative overflow-hidden rounded-3xl border border-[#8B5CF6]/20 bg-[#18181B] p-6 shadow-[0_28px_90px_-48px_rgba(139,92,246,0.6)] sm:p-8">
       <div className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-[#8B5CF6]/15 blur-3xl" />
@@ -11,10 +16,10 @@ export function AIInsightCard() {
         </div>
         <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-[#A78BFA]">DevPath intelligence</p>
         <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Ask your AI career coach</h2>
-        <p className="mt-3 max-w-xl text-sm leading-6 text-[#A1A1AA]">Get guidance grounded in your goal, current skills, active roadmap, and the progress you have already made.</p>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-[#A1A1AA]">{recommendations[0]}</p>
         <div className="mt-7 flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#09090B]/70 p-2 pl-4">
           <Sparkles className="size-4 shrink-0 text-[#8B5CF6]" />
-          <span className="min-w-0 flex-1 truncate text-sm text-[#71717A]">What should I focus on this week?</span>
+          <span className="min-w-0 flex-1 truncate text-sm text-[#71717A]">Focus next: {focusArea}</span>
           <button type="button" aria-label="Open AI career coach" className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#8B5CF6] text-white transition-all hover:bg-[#9D74F7] hover:shadow-lg hover:shadow-[#8B5CF6]/20"><ArrowRight className="size-4" /></button>
         </div>
       </div>

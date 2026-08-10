@@ -26,9 +26,9 @@ export function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
         className="h-1 overflow-hidden rounded-full bg-white/[0.07]"
       >
         <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#10B981] transition-[width] duration-500 ease-out"
+          className="h-full w-full origin-left rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#10B981]"
           initial={false}
-          animate={{ width: `${percentage}%` }}
+          animate={{ scaleX: percentage / 100 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         />
       </div>

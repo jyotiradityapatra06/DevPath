@@ -4,12 +4,7 @@ import { animate, motion, useMotionValue, useTransform } from "framer-motion"
 import { BrainCircuit, Layers3, Sparkles, Target } from "lucide-react"
 import { useEffect } from "react"
 
-const metrics = [
-  { label: "Current skill level", value: "Intermediate", icon: BrainCircuit, color: "text-[#A78BFA]" },
-  { label: "Skills analyzed", value: 24, icon: Layers3, color: "text-[#D4D4D8]" },
-  { label: "Strong areas", value: 8, icon: Sparkles, color: "text-[#6EE7B7]" },
-  { label: "Improvement areas", value: 6, icon: Target, color: "text-[#FCD34D]" },
-]
+import type { SkillSummary } from "@/features/skills/types/skill-intelligence"
 
 function AnimatedCounter({ value }: { value: number }) {
   const count = useMotionValue(0)
@@ -17,13 +12,19 @@ function AnimatedCounter({ value }: { value: number }) {
 
   useEffect(() => {
     const controls = animate(count, value, { duration: 0.8, ease: [0.22, 1, 0.36, 1] })
-    return controls.stop
+    return () => controls.stop()
   }, [count, value])
 
   return <motion.span>{rounded}</motion.span>
 }
 
-export function SkillOverviewCard() {
+export function SkillOverviewCard({ summary }: { summary: SkillSummary }) {
+  const metrics = [
+    { label: "Current skill level", value: summary.currentLevel, icon: BrainCircuit, color: "text-[#A78BFA]" },
+    { label: "Skills analyzed", value: summary.totalSkills, icon: Layers3, color: "text-[#D4D4D8]" },
+    { label: "Strong areas", value: summary.strongSkills, icon: Sparkles, color: "text-[#6EE7B7]" },
+    { label: "Improvement areas", value: summary.improvementAreas, icon: Target, color: "text-[#FCD34D]" },
+  ]
   return (
     <section className="overflow-hidden rounded-3xl border border-white/[0.08] bg-[#18181B]/75">
       <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-5 sm:px-6">

@@ -1,12 +1,18 @@
 import { ArrowDown, Check, Flag, Sparkles } from "lucide-react"
 
-const stages = [
-  { label: "Current Skills", detail: "Python · SQL · Core ML", icon: Check, tone: "emerald" },
-  { label: "Next Skills", detail: "Deep Learning · FastAPI · Cloud", icon: Sparkles, tone: "violet" },
-  { label: "Career Ready", detail: "Production AI Engineer profile", icon: Flag, tone: "amber" },
-]
+interface SkillTimelineProps {
+  currentSkills: string[]
+  nextSkills: string[]
+  targetRole: string
+}
 
-export function SkillTimeline() {
+export function SkillTimeline({ currentSkills, nextSkills, targetRole }: SkillTimelineProps) {
+  const stages = [
+    { label: "Current Skills", detail: currentSkills.length ? currentSkills.join(" · ") : "Building foundations", icon: Check, tone: "emerald" },
+    { label: "Next Skills", detail: nextSkills.length ? nextSkills.join(" · ") : "Analysis in progress", icon: Sparkles, tone: "violet" },
+    { label: "Career Ready", detail: `${targetRole} profile`, icon: Flag, tone: "amber" },
+  ]
+
   return (
     <div className="grid items-center gap-3 p-5 sm:p-6 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
       {stages.map(({ label, detail, icon: Icon, tone }, index) => (

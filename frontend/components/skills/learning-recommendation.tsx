@@ -4,9 +4,9 @@ import { ArrowUpRight, Clock3 } from "lucide-react"
 import { motion } from "framer-motion"
 
 import { PriorityBadge } from "@/components/skills/priority-badge"
-import type { LearningStep } from "@/features/skills/types/skill-intelligence"
+import type { LearningRecommendation as LearningRecommendationData } from "@/features/skills/types/skill-intelligence"
 
-export function LearningRecommendation({ recommendation, index }: { recommendation: LearningStep; index: number }) {
+export function LearningRecommendation({ recommendation, index }: { recommendation: LearningRecommendationData; index: number }) {
   return (
     <motion.article initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.07 }} className="group grid gap-5 border-b border-white/[0.07] px-5 py-6 last:border-b-0 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:px-6">
       <span className="grid size-10 place-items-center rounded-xl border border-[#8B5CF6]/20 bg-[#8B5CF6]/10 text-sm font-semibold text-[#A78BFA]">{String(index + 1).padStart(2, "0")}</span>

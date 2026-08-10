@@ -21,10 +21,11 @@ const stateLabels: Record<SkillState, string> = {
 interface SkillGraphProps {
   nodes: SkillNode[]
   connections: SkillConnection[]
+  targetRole: string
 }
 
-export function SkillGraph({ nodes, connections }: SkillGraphProps) {
-  const [activeId, setActiveId] = useState("ml")
+export function SkillGraph({ nodes, connections, targetRole }: SkillGraphProps) {
+  const [activeId, setActiveId] = useState(nodes[0]?.id ?? "")
   const activeNode = nodes.find((node) => node.id === activeId) ?? nodes[0]
   const nodeMap = new Map(nodes.map((node) => [node.id, node]))
 
@@ -72,8 +73,8 @@ export function SkillGraph({ nodes, connections }: SkillGraphProps) {
           <div className={cn("mt-5 inline-flex rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em]", nodeStyles[activeNode.state])}>{stateLabels[activeNode.state]}</div>
           <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-white">{activeNode.name}</h3>
           <p className="mt-2 text-sm text-[#71717A]">{activeNode.note}</p>
-          <div className="mt-8"><div className="flex items-end justify-between"><span className="text-xs text-[#71717A]">Capability signal</span><span className="text-3xl font-semibold tracking-[-0.05em] text-white">{activeNode.level}<span className="text-sm text-[#52525B]">%</span></span></div><div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.06]"><motion.div key={activeNode.id} initial={{ width: 0 }} animate={{ width: `${activeNode.level}%` }} transition={{ duration: 0.55 }} className={cn("h-full rounded-full", activeNode.state === "strong" ? "bg-[#10B981]" : activeNode.state === "learning" ? "bg-[#8B5CF6]" : "bg-[#F59E0B]")} /></div></div>
-          <p className="mt-8 border-t border-white/[0.07] pt-6 text-xs leading-5 text-[#71717A]">Select any node to inspect its role in your AI Engineer readiness profile.</p>
+          <div className="mt-8"><div className="flex items-end justify-between"><span className="text-xs text-[#71717A]">Capability signal</span><span className="text-3xl font-semibold tracking-[-0.05em] text-white">{activeNode.level}<span className="text-sm text-[#52525B]">%</span></span></div><div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.06]"><motion.div key={activeNode.id} initial={{ scaleX: 0 }} animate={{ scaleX: activeNode.level / 100 }} transition={{ duration: 0.55 }} className={cn("h-full w-full origin-left rounded-full", activeNode.state === "strong" ? "bg-[#10B981]" : activeNode.state === "learning" ? "bg-[#8B5CF6]" : "bg-[#F59E0B]")} /></div></div>
+          <p className="mt-8 border-t border-white/[0.07] pt-6 text-xs leading-5 text-[#71717A]">Select any node to inspect its role in your {targetRole} readiness profile.</p>
         </aside>
       </div>
     </section>

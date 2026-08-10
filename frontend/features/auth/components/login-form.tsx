@@ -29,7 +29,8 @@ export function LoginForm() {
         email: String(formData.get("email")),
         password: String(formData.get("password")),
       })
-      router.replace("/app")
+      const returnTo = searchParams.get("returnTo")
+      router.replace(returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/app")
       router.refresh()
     } catch (caughtError) {
       setError(getApiErrorMessage(caughtError, "Unable to sign in. Please try again."))

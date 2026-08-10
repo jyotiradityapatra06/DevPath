@@ -9,10 +9,14 @@ export interface RegisterInput extends LoginInput {
 
 export interface AuthSession {
   authenticated: boolean
+  user: AuthUser | null
 }
 
-export interface RegisteredUser {
+export interface AuthUser {
   id: number
   name: string
   email: string
+  onboarding_completed: boolean
 }
+
+export type RegisteredUser = AuthUser

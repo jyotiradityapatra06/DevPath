@@ -9,6 +9,7 @@ from app.routers.skills import router as skills_router
 from app.routers.skill_gap import router as skill_gap_router
 from app.routers.resources import router as resources_router
 from app.routers.personalization import router as personalization_router
+from app.routers.dashboard import router as dashboard_router
 
 
 app = FastAPI(title="DevPath API", version="0.1.0")
@@ -21,6 +22,7 @@ app.include_router(roles_router)
 app.include_router(skill_gap_router)
 app.include_router(resources_router)
 app.include_router(personalization_router)
+app.include_router(dashboard_router)
 
 
 @app.get("/")

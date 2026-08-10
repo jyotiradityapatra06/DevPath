@@ -58,7 +58,7 @@
   --input: oklch(0.89 0.025 275);
   --ring: oklch(0.61 0.2 280);
   --brand-violet: oklch(0.57 0.25 282);
-  --brand-cyan: oklch(0.72 0.15 205);
+  --brand-cyan: #10b981;
   --sidebar: oklch(0.195 0.04 274);
   --sidebar-foreground: oklch(0.93 0.015 274);
   --sidebar-border: oklch(1 0 0 / 10%);
@@ -92,6 +92,8 @@
 
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
   }
 
   body {
@@ -104,8 +106,19 @@
 
   button,
   a,
-  input {
+  input,
+  textarea {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: rgb(139 92 246 / 0.35);
+    color: #fafafa;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(139 92 246 / 0.65);
+    outline-offset: 2px;
   }
 }
 
@@ -116,5 +129,54 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .landing-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, black 15%, transparent 90%);
+  }
+
+  .aurora-mesh {
+    background:
+      radial-gradient(circle at 22% 18%, rgb(139 92 246 / 0.2), transparent 28%),
+      radial-gradient(circle at 78% 30%, rgb(16 185 129 / 0.12), transparent 24%),
+      radial-gradient(circle at 58% 82%, rgb(245 158 11 / 0.07), transparent 22%);
+  }
+
+  .premium-surface {
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  }
+
+  .premium-surface:hover {
+    transform: translateY(-2px);
+    border-color: rgb(139 92 246 / 0.18);
+    box-shadow: 0 24px 70px -42px rgb(139 92 246 / 0.35);
+  }
+
+  .intelligence-node {
+    animation: intelligence-float 5.5s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .intelligence-node:nth-of-type(even) {
+    animation-delay: -2.2s;
+  }
+
+  @keyframes intelligence-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

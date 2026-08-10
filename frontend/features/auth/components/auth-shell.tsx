@@ -10,10 +10,10 @@ const highlights = [
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
+    <main className="dark grid min-h-screen bg-[#09090B] text-[#FAFAFA] lg:grid-cols-[1.05fr_0.95fr]">
       <section className="relative hidden overflow-hidden bg-sidebar px-12 py-10 text-sidebar-foreground lg:flex lg:flex-col">
         <div className="absolute -left-28 top-16 size-72 rounded-full bg-brand-violet/25 blur-3xl" />
-        <div className="absolute -right-20 bottom-10 size-80 rounded-full bg-brand-cyan/20 blur-3xl" />
+        <div className="absolute -right-20 bottom-10 size-80 rounded-full bg-[#10B981]/15 blur-3xl" />
         <BrandMark inverse />
         <div className="relative my-auto max-w-xl">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-brand-cyan">

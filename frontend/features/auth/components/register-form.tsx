@@ -29,7 +29,7 @@ export function RegisterForm() {
         email: String(formData.get("email")),
         password: String(formData.get("password")),
       })
-      router.replace("/app")
+      router.replace("/onboarding")
       router.refresh()
     } catch (caughtError) {
       setError(getApiErrorMessage(caughtError, "Unable to create your account."))

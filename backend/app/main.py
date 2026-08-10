@@ -15,6 +15,9 @@ from app.routers.progress import router as progress_router
 from app.routers.conversations import router as conversations_router
 from app.routers.coach import router as coach_router
 from app.routers.intelligence import router as intelligence_router
+from app.routers import adaptive
+from app.routers import planner
+from app.routers import interview
 
 
 app = FastAPI(title="DevPath API", version="0.1.0")
@@ -43,3 +46,16 @@ def root() -> dict[str, str]:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "healthy", "service": "DevPath API"}
+
+app.include_router(
+    adaptive.router,
+    prefix="/api/v1"
+)
+app.include_router(
+    planner.router,
+    prefix="/api/v1"
+)
+app.include_router(
+    interview.router,
+    prefix="/api/v1"
+)

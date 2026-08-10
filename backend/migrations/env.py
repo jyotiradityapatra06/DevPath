@@ -7,7 +7,9 @@ from app.config import settings
 from app.database.connection import Base
 from app.models import (
     CareerGoal,
+    Conversation,
     LearningResource,
+    Message,
     Profile,
     PersonalizedRecommendation,
     Progress,

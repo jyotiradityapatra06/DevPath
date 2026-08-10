@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from app.models.user_skill import UserSkill
     from app.models.progress import Progress
     from app.models.personalization import PersonalizedRecommendation
+    from app.models.conversation import Conversation
 
 
 class User(Base):
@@ -76,6 +77,12 @@ class User(Base):
 
     personalized_recommendations: Mapped[list["PersonalizedRecommendation"]] = relationship(
         "PersonalizedRecommendation",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    conversations: Mapped[list["Conversation"]] = relationship(
+        "Conversation",
         back_populates="user",
         cascade="all, delete-orphan",
     )

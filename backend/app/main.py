@@ -12,6 +12,8 @@ from app.routers.personalization import router as personalization_router
 from app.routers.dashboard import router as dashboard_router
 from app.routers.user_skills import router as user_skills_router
 from app.routers.progress import router as progress_router
+from app.routers.conversations import router as conversations_router
+from app.routers.coach import router as coach_router
 
 
 app = FastAPI(title="DevPath API", version="0.1.0")
@@ -27,6 +29,8 @@ app.include_router(personalization_router)
 app.include_router(dashboard_router)
 app.include_router(user_skills_router)
 app.include_router(progress_router)
+app.include_router(conversations_router)
+app.include_router(coach_router)
 
 
 @app.get("/")

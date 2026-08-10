@@ -54,6 +54,8 @@ def _roadmap_progress(db: Session, user_id: int) -> RoadmapProgress:
     if roadmap is None:
         return RoadmapProgress(
             current_phase=None,
+            current_step=None,
+            next_milestone=None,
             completion_percentage=0.0,
             completed_steps=0,
             total_steps=0,
@@ -76,9 +78,17 @@ def _roadmap_progress(db: Session, user_id: int) -> RoadmapProgress:
         (step for step in ordered_steps if progress_by_step.get(step.id) != "completed"),
         None,
     )
+    current_index = ordered_steps.index(current) if current else -1
+    next_step = (
+        ordered_steps[current_index + 1]
+        if current is not None and current_index + 1 < len(ordered_steps)
+        else None
+    )
     total = len(ordered_steps)
     return RoadmapProgress(
         current_phase=current.week_number if current else None,
+        current_step=current.title if current else None,
+        next_milestone=next_step.title if next_step else None,
         completion_percentage=round(completed / total * 100, 2) if total else 0.0,
         completed_steps=completed,
         total_steps=total,
@@ -122,12 +132,20 @@ def get_dashboard(db: Session, user: User) -> DashboardResponse:
     experience_level = (
         user.profile.experience_level if user.profile else None
     ) or goal.experience_level or "Not specified"
+    roadmap_progress = _roadmap_progress(db, user.id)
 
     return DashboardResponse(
         career_profile=CareerProfile(
+            user_name=user.name,
             target_role=goal.role.title,
             experience_level=experience_level,
             readiness_score=gap["overall_score"],
+            current_stage=(
+                f"Phase {roadmap_progress.current_phase}"
+                if roadmap_progress.current_phase is not None
+                else experience_level
+            ),
+            career_goal=f"Become a {goal.role.title}",
         ),
         skill_overview=SkillOverview(
             total_skills=len(required_ids),
@@ -143,6 +161,6 @@ def get_dashboard(db: Session, user: User) -> DashboardResponse:
             SkillGapItem(skill=item["name"], priority=item["priority"])
             for item in gap["missing_skills"]
         ],
-        roadmap_progress=_roadmap_progress(db, user.id),
+        roadmap_progress=roadmap_progress,
         ai_recommendations=[item.title for item in recommendations],
     )

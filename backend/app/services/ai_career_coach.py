@@ -73,4 +73,5 @@ def generate_career_coach_response(
         conversation_id=conversation_id,
         message_id=assistant_message.id,
         content=assistant_message.content,
+        timestamp=assistant_message.created_at,
     )

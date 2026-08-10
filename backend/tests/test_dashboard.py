@@ -106,7 +106,9 @@ def test_dashboard_does_not_persist_skill_gap(client: TestClient) -> None:
 def test_dashboard_returns_correct_role_information(client: TestClient) -> None:
     data = client.get("/api/v1/dashboard", headers=build_dashboard(client)).json()
 
+    assert data["career_profile"]["user_name"] == "Grace"
     assert data["career_profile"]["target_role"] == "Backend Engineer"
+    assert data["career_profile"]["career_goal"] == "Become a Backend Engineer"
     assert data["career_profile"]["experience_level"] == "Beginner"
     assert data["career_profile"]["readiness_score"] == 41.67
 
@@ -137,6 +139,8 @@ def test_roadmap_progress_calculation_works(client: TestClient) -> None:
 
     assert data["roadmap_progress"] == {
         "current_phase": 2,
+        "current_step": "Docker",
+        "next_milestone": "Design",
         "completion_percentage": 33.33,
         "completed_steps": 1,
         "total_steps": 3,

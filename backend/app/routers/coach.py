@@ -6,7 +6,7 @@ from app.ai.dependencies import get_ai_provider
 from app.auth.dependencies import get_current_user
 from app.database.connection import get_db
 from app.models.user import User
-from app.schemas.coach import CoachChatRequest, CoachChatResponse
+from app.schemas.coach import CoachChatRequest, CoachChatResponse, CoachInsight, SuggestedAction
 from app.services.ai_career_coach import (
     CareerCoachProviderError,
     generate_career_coach_response,
@@ -42,4 +42,26 @@ def coach_chat(
     return CoachChatResponse(
         conversation_id=result.conversation_id,
         response=result.content,
+        timestamp=result.timestamp,
+        insights=[
+            CoachInsight(
+                title="Career Insight",
+                description=result.content,
+                priority="Recommended",
+            )
+        ],
+        suggested_actions=[
+            SuggestedAction(
+                label="Turn this into a plan",
+                action="Turn this guidance into a practical weekly plan.",
+            ),
+            SuggestedAction(
+                label="Suggest a project",
+                action="Suggest a project that helps me apply this guidance.",
+            ),
+            SuggestedAction(
+                label="Review my priorities",
+                action="Review my career priorities and tell me what to do first.",
+            ),
+        ],
     )

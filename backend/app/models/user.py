@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
@@ -73,6 +73,13 @@ class User(Base):
 
     skill_gaps: Mapped[list["SkillGap"]] = relationship(
         "SkillGap", back_populates="user", cascade="all, delete-orphan"
+    )
+
+    onboarding_completed: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        server_default="false",
+        nullable=False,
     )
 
     personalized_recommendations: Mapped[list["PersonalizedRecommendation"]] = relationship(

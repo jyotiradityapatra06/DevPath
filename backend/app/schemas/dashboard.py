@@ -2,9 +2,12 @@ from pydantic import BaseModel, ConfigDict
 
 
 class CareerProfile(BaseModel):
+    user_name: str
     target_role: str
     experience_level: str
     readiness_score: float
+    current_stage: str
+    career_goal: str
 
 
 class SkillOverview(BaseModel):
@@ -26,6 +29,8 @@ class SkillGapItem(BaseModel):
 
 class RoadmapProgress(BaseModel):
     current_phase: int | None
+    current_step: str | None
+    next_milestone: str | None
     completion_percentage: float
     completed_steps: int
     total_steps: int

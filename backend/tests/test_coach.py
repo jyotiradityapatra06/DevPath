@@ -83,10 +83,16 @@ def test_successful_response(client: TestClient) -> None:
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "conversation_id": conversation_id,
-        "response": "Practice FastAPI and PostgreSQL.",
-    }
+    data = response.json()
+    assert data["conversation_id"] == conversation_id
+    assert data["response"] == "Practice FastAPI and PostgreSQL."
+    assert data["timestamp"]
+    assert data["insights"] == [{
+        "title": "Career Insight",
+        "description": "Practice FastAPI and PostgreSQL.",
+        "priority": "Recommended",
+    }]
+    assert data["suggested_actions"][0]["label"] == "Turn this into a plan"
 
 
 def test_assistant_message_is_persisted(client: TestClient) -> None:

@@ -18,6 +18,16 @@ class RoleSeed(TypedDict):
 
 
 ROLE_DATA: dict[str, RoleSeed] = {
+    "Software Engineer": {
+        "description": "Designs and builds maintainable software systems.",
+        "skills": {
+            "Python": ("Programming Language", "Intermediate", 85),
+            "JavaScript": ("Programming Language", "Intermediate", 85),
+            "Git": ("Developer Tool", "Intermediate", 80),
+            "Data Structures": ("Computer Science", "Intermediate", 90),
+            "System Design": ("Software Architecture", "Advanced", 80),
+        },
+    },
     "Backend Developer": {
         "description": "Builds reliable server-side applications, APIs, and data services.",
         "skills": {
@@ -54,6 +64,16 @@ ROLE_DATA: dict[str, RoleSeed] = {
             "MLOps": ("DevOps", "Advanced", 80),
         },
     },
+    "Cloud Engineer": {
+        "description": "Builds reliable cloud infrastructure and deployment systems.",
+        "skills": {
+            "AWS": ("Cloud Platform", "Intermediate", 95),
+            "Docker": ("DevOps", "Intermediate", 90),
+            "Kubernetes": ("DevOps", "Advanced", 90),
+            "Linux": ("Operating System", "Intermediate", 85),
+            "Git": ("Developer Tool", "Intermediate", 75),
+        },
+    },
     "Data Scientist": {
         "description": "Uses statistics and computation to turn data into decisions.",
         "skills": {
@@ -67,10 +87,26 @@ ROLE_DATA: dict[str, RoleSeed] = {
     },
 }
 
+ADDITIONAL_SKILLS: dict[str, SkillSeed] = {
+    "TypeScript": ("Programming Language", "Intermediate", 70),
+    "Next.js": ("Frontend Framework", "Intermediate", 70),
+    "Django": ("Backend Framework", "Intermediate", 70),
+    "MongoDB": ("Database", "Intermediate", 70),
+    "TensorFlow": ("ML Framework", "Advanced", 70),
+}
+
 
 def seed_skill_intelligence(db: Session) -> None:
     skills = {skill.name: skill for skill in db.scalars(select(Skill)).all()}
     roles = {role.title: role for role in db.scalars(select(Role)).all()}
+
+    for name, values in ADDITIONAL_SKILLS.items():
+        if name not in skills:
+            category, difficulty, _ = values
+            skill = Skill(name=name, category=category, difficulty=difficulty)
+            db.add(skill)
+            db.flush()
+            skills[name] = skill
 
     for title, role_data in ROLE_DATA.items():
         role = roles.get(title)

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -24,3 +25,4 @@ class CoachResponse(BaseModel):
     conversation_id: int
     message_id: int
     content: str
+    timestamp: datetime

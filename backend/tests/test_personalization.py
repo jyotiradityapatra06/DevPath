@@ -44,7 +44,7 @@ def build_scenario(client: TestClient) -> tuple[dict[str, str], int]:
         target_timeline="6 months",
     )
     user.user_skills.append(
-        UserSkill(skill=python, level="Intermediate", status="active")
+        UserSkill(skill=python, level="INTERMEDIATE", status="COMPLETED")
     )
     goal = CareerGoal(
         name="Ada Backend Goal",

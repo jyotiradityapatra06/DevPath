@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
@@ -12,17 +12,22 @@ if TYPE_CHECKING:
 
 class UserSkill(Base):
     __tablename__ = "user_skills"
+    __table_args__ = (
+        UniqueConstraint("user_id", "skill_id", name="uq_user_skills_user_skill"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"),
-        nullable=False
+        nullable=False,
+        index=True,
     )
 
     skill_id: Mapped[int] = mapped_column(
         ForeignKey("skills.id"),
-        nullable=False
+        nullable=False,
+        index=True,
     )
 
     level: Mapped[str] = mapped_column(

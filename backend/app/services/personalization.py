@@ -1,6 +1,6 @@
 import re
 
-from sqlalchemy import delete, select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.models.career_goal import CareerGoal
@@ -90,9 +90,12 @@ def generate_personalized_recommendations(
     learning_style = profile.learning_style if profile and profile.learning_style else "hands-on"
 
     db.execute(
-        delete(PersonalizedRecommendation).where(
-            PersonalizedRecommendation.user_id == user_id
+        update(PersonalizedRecommendation)
+        .where(
+            PersonalizedRecommendation.user_id == user_id,
+            PersonalizedRecommendation.is_active.is_(True),
         )
+        .values(is_active=False)
     )
     recommendations: list[PersonalizedRecommendation] = []
     for skill in gap["missing_skills"]:
@@ -111,6 +114,7 @@ def generate_personalized_recommendations(
             ),
             priority_score=score,
             priority_level=_priority_level(score),
+            is_active=True,
         )
         db.add(recommendation)
         recommendations.append(recommendation)
@@ -128,6 +132,7 @@ def get_recommendations(
         db.scalars(
             select(PersonalizedRecommendation)
             .where(PersonalizedRecommendation.user_id == user_id)
+            .where(PersonalizedRecommendation.is_active.is_(True))
             .order_by(
                 PersonalizedRecommendation.priority_score.desc(),
                 PersonalizedRecommendation.id,
@@ -143,5 +148,6 @@ def get_recommendation(
         select(PersonalizedRecommendation).where(
             PersonalizedRecommendation.id == recommendation_id,
             PersonalizedRecommendation.user_id == user_id,
+            PersonalizedRecommendation.is_active.is_(True),
         )
     )

@@ -7,7 +7,11 @@ from sqlalchemy.orm import Session
 from app.auth.dependencies import get_current_user
 from app.database.connection import get_db
 from app.models.user import User
-from app.services.skill_gap import calculate_skill_gap, get_latest_skill_gap
+from app.services.skill_gap import (
+    calculate_skill_gap_analysis,
+    get_latest_skill_gap,
+    save_skill_gap_analysis,
+)
 
 
 router = APIRouter(prefix="/api/v1/skill-gap", tags=["skill-gap"])
@@ -43,7 +47,8 @@ def analyze_skill_gap(
     db: Session = Depends(get_db),
 ) -> dict[str, object]:
     try:
-        return calculate_skill_gap(user.id, payload.role_id, db)
+        analysis = calculate_skill_gap_analysis(user.id, payload.role_id, db)
+        return save_skill_gap_analysis(db, analysis)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 

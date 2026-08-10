@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Float, ForeignKey, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, func, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
@@ -22,6 +22,9 @@ class SkillGap(Base):
         ForeignKey("roles.id", ondelete="CASCADE"), nullable=False, index=True
     )
     overall_score: Mapped[float] = mapped_column(Float, nullable=False)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default=true(), nullable=False, index=True
+    )
     generated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

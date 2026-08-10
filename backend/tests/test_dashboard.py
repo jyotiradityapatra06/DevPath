@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.auth.security import create_access_token
@@ -12,6 +13,7 @@ from app.models.roadmap_step import RoadmapStep
 from app.models.role import Role
 from app.models.role_skill import RoleSkill
 from app.models.skill import Skill
+from app.models.skill_gap import SkillGap
 from app.models.user import User
 from app.models.user_skill import UserSkill
 
@@ -37,8 +39,8 @@ def build_dashboard(client: TestClient) -> dict[str, str]:
     user.profile = Profile(full_name="Grace", experience_level="Beginner")
     user.user_skills.extend(
         [
-            UserSkill(skill=python, level="Advanced", status="completed"),
-            UserSkill(skill=docker, level="Intermediate", status="active"),
+            UserSkill(skill=python, level="ADVANCED", status="COMPLETED"),
+            UserSkill(skill=docker, level="INTERMEDIATE", status="IN_PROGRESS"),
         ]
     )
     goal = CareerGoal(
@@ -85,12 +87,28 @@ def test_authenticated_user_gets_dashboard_successfully(client: TestClient) -> N
     assert response.json()["ai_recommendations"] == ["Complete Docker fundamentals"]
 
 
+def test_dashboard_does_not_persist_skill_gap(client: TestClient) -> None:
+    headers = build_dashboard(client)
+    db = database_session(client)
+    before = db.scalar(select(func.count()).select_from(SkillGap))
+    db.close()
+
+    response = client.get("/api/v1/dashboard", headers=headers)
+
+    db = database_session(client)
+    after = db.scalar(select(func.count()).select_from(SkillGap))
+    db.close()
+    assert response.status_code == 200
+    assert before == 0
+    assert after == before
+
+
 def test_dashboard_returns_correct_role_information(client: TestClient) -> None:
     data = client.get("/api/v1/dashboard", headers=build_dashboard(client)).json()
 
     assert data["career_profile"]["target_role"] == "Backend Engineer"
     assert data["career_profile"]["experience_level"] == "Beginner"
-    assert data["career_profile"]["readiness_score"] == 75.0
+    assert data["career_profile"]["readiness_score"] == 41.67
 
 
 def test_skill_counts_are_calculated_correctly(client: TestClient) -> None:
@@ -102,12 +120,16 @@ def test_skill_counts_are_calculated_correctly(client: TestClient) -> None:
         "in_progress": 1,
         "missing": 1,
     }
+    assert data["strengths"] == [{"skill": "Python", "level": "ADVANCED"}]
 
 
 def test_missing_skills_are_returned(client: TestClient) -> None:
     data = client.get("/api/v1/dashboard", headers=build_dashboard(client)).json()
 
-    assert data["skill_gaps"] == [{"skill": "System Design", "priority": "Medium"}]
+    assert data["skill_gaps"] == [
+        {"skill": "Docker", "priority": "Medium"},
+        {"skill": "System Design", "priority": "Medium"},
+    ]
 
 
 def test_roadmap_progress_calculation_works(client: TestClient) -> None:

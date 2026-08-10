@@ -15,13 +15,24 @@ from app.schemas.dashboard import (
     SkillOverview,
     Strength,
 )
+from app.schemas.user_skills import (
+    SkillLevel,
+    SkillStatus,
+    normalize_skill_level,
+    normalize_skill_status,
+)
 from app.services.personalization import get_recommendations
 from app.services.roadmap_generator import get_current_roadmap
-from app.services.skill_gap import calculate_skill_gap
+from app.services.skill_gap import calculate_skill_gap_analysis
 
 
-COMPLETED_STATUSES = {"completed", "mastered"}
-LEVEL_RANK = {"advanced": 3, "intermediate": 2, "beginner": 1}
+COMPLETED_STATUSES = {SkillStatus.COMPLETED, SkillStatus.MASTERED}
+LEVEL_RANK = {
+    SkillLevel.EXPERT: 4,
+    SkillLevel.ADVANCED: 3,
+    SkillLevel.INTERMEDIATE: 2,
+    SkillLevel.BEGINNER: 1,
+}
 
 
 def _latest_goal(db: Session, user_id: int) -> CareerGoal | None:
@@ -79,7 +90,7 @@ def get_dashboard(db: Session, user: User) -> DashboardResponse:
     if goal is None or goal.role is None or goal.target_role_id is None:
         raise ValueError("No target career role found")
 
-    gap = calculate_skill_gap(user.id, goal.target_role_id, db)
+    gap = calculate_skill_gap_analysis(user.id, goal.target_role_id, db)
     required_ids = {requirement.skill_id for requirement in goal.role.role_skills}
     user_skills = list(
         db.scalars(
@@ -90,14 +101,22 @@ def get_dashboard(db: Session, user: User) -> DashboardResponse:
     )
     required_user_skills = [item for item in user_skills if item.skill_id in required_ids]
     completed = sum(
-        item.status.lower() in COMPLETED_STATUSES for item in required_user_skills
+        normalize_skill_status(item.status) in COMPLETED_STATUSES
+        for item in required_user_skills
     )
-    in_progress = len(required_user_skills) - completed
+    in_progress = sum(
+        normalize_skill_status(item.status) == SkillStatus.IN_PROGRESS
+        for item in required_user_skills
+    )
     missing = len(required_ids) - completed - in_progress
 
     strengths = sorted(
-        user_skills,
-        key=lambda item: (-LEVEL_RANK.get(item.level.lower(), 0), item.skill.name),
+        [
+            item
+            for item in user_skills
+            if normalize_skill_status(item.status) in COMPLETED_STATUSES
+        ],
+        key=lambda item: (-LEVEL_RANK[normalize_skill_level(item.level)], item.skill.name),
     )
     recommendations = get_recommendations(db, user.id)
     experience_level = (
@@ -117,7 +136,8 @@ def get_dashboard(db: Session, user: User) -> DashboardResponse:
             missing=max(missing, 0),
         ),
         strengths=[
-            Strength(skill=item.skill.name, level=item.level) for item in strengths[:5]
+            Strength(skill=item.skill.name, level=normalize_skill_level(item.level).value)
+            for item in strengths[:5]
         ],
         skill_gaps=[
             SkillGapItem(skill=item["name"], priority=item["priority"])

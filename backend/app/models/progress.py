@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
@@ -19,6 +19,7 @@ class Progress(Base):
             "status IN ('not_started', 'in_progress', 'completed')",
             name="ck_progress_status",
         ),
+        UniqueConstraint("user_id", "step_id", name="uq_progress_user_step"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -26,11 +27,13 @@ class Progress(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"),
         nullable=False,
+        index=True,
     )
 
     step_id: Mapped[int] = mapped_column(
         ForeignKey("roadmap_steps.id"),
         nullable=False,
+        index=True,
     )
 
     status: Mapped[str] = mapped_column(

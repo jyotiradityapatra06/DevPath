@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.database.connection import SessionLocal
@@ -39,6 +39,17 @@ def generate_roadmap(
             session.add(goal)
             session.flush()
 
+        session.execute(
+            update(Roadmap)
+            .where(
+                Roadmap.career_goal_id.in_(
+                    select(CareerGoal.id).where(CareerGoal.user_id == user_id)
+                ),
+                Roadmap.is_active.is_(True),
+            )
+            .values(is_active=False)
+        )
+
         roadmap = Roadmap(
             career_goal=goal,
             title=f"{role.title} Learning Roadmap",
@@ -78,6 +89,7 @@ def get_current_roadmap(user_id: int, db: Session) -> Roadmap | None:
         select(Roadmap)
         .join(Roadmap.career_goal)
         .where(CareerGoal.user_id == user_id)
+        .where(Roadmap.is_active.is_(True))
         .order_by(Roadmap.id.desc())
         .options(
             selectinload(Roadmap.career_goal).selectinload(CareerGoal.role),

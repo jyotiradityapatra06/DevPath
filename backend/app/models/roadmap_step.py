@@ -19,6 +19,7 @@ class RoadmapStep(Base):
     roadmap_id: Mapped[int] = mapped_column(
         ForeignKey("roadmaps.id"),
         nullable=False,
+        index=True,
     )
 
     title: Mapped[str] = mapped_column(

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.connection import Base
@@ -18,6 +18,7 @@ class Roadmap(Base):
     career_goal_id: Mapped[int] = mapped_column(
         ForeignKey("career_goals.id"),
         nullable=False,
+        index=True,
     )
 
     title: Mapped[str] = mapped_column(
@@ -28,6 +29,10 @@ class Roadmap(Base):
     duration: Mapped[str | None] = mapped_column(
         String(50),
         nullable=True,
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default=true(), nullable=False, index=True
     )
 
     steps: Mapped[list["RoadmapStep"]] = relationship(

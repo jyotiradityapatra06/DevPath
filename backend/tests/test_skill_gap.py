@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.auth.security import create_access_token
@@ -34,7 +35,7 @@ def build_gap_scenario(client: TestClient) -> tuple[Session, User, Role]:
     )
     user = User(name="Ada", email="ada-gap@example.com", password_hash="hash")
     user.user_skills.append(
-        UserSkill(skill=python, level="Intermediate", status="active")
+        UserSkill(skill=python, level="INTERMEDIATE", status="COMPLETED")
     )
     db.add_all([user, role])
     db.commit()
@@ -76,6 +77,11 @@ def test_analyze_and_latest_api(client: TestClient) -> None:
     assert analyzed.json()["overall_score"] == pytest.approx(51.35)
     assert analyzed.json()["missing_skills"][0]["name"] == "FastAPI"
 
+    db = database_session(client)
+    count = db.scalar(select(func.count()).select_from(SkillGap))
+    db.close()
+    assert count == 1
+
     latest = client.get("/api/v1/skill-gap/latest", headers=headers)
     assert latest.status_code == 200
     assert latest.json()["id"] == analyzed.json()["id"]
@@ -99,3 +105,24 @@ def test_analyze_unknown_role_returns_404(client: TestClient) -> None:
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Role not found"
+
+
+def test_beginner_skill_does_not_satisfy_advanced_requirement(
+    client: TestClient,
+) -> None:
+    db = database_session(client)
+    skill = Skill(name="System Design", category="Architecture", difficulty="Advanced")
+    role = Role(title="Platform Engineer")
+    role.role_skills.append(RoleSkill(skill=skill, importance=90))
+    user = User(name="Lin", email="lin-level-gap@example.com", password_hash="hash")
+    user.user_skills.append(
+        UserSkill(skill=skill, level="BEGINNER", status="COMPLETED")
+    )
+    db.add_all([user, role])
+    db.commit()
+
+    result = calculate_skill_gap(user.id, role.id, db)
+
+    assert result["overall_score"] == pytest.approx(33.33)
+    assert [item["name"] for item in result["missing_skills"]] == ["System Design"]
+    db.close()

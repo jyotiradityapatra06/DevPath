@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
 
+    GEMINI_API_KEY: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -19,9 +21,19 @@ class Settings(BaseSettings):
     @classmethod
     def use_psycopg_driver(cls, value: str) -> str:
         if value.startswith("postgres://"):
-            return value.replace("postgres://", "postgresql+psycopg://", 1)
+            return value.replace(
+                "postgres://",
+                "postgresql+psycopg://",
+                1,
+            )
+
         if value.startswith("postgresql://"):
-            return value.replace("postgresql://", "postgresql+psycopg://", 1)
+            return value.replace(
+                "postgresql://",
+                "postgresql+psycopg://",
+                1,
+            )
+
         return value
 
 

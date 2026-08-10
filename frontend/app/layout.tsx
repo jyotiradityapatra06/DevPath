@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
+
+import { AppProviders } from "@/components/providers/app-providers";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DevPath",
-  description: "Developer readiness and career intelligence platform",
+  title: {
+    default: "DevPath",
+    template: "%s · DevPath",
+  },
+  description: "AI-powered career intelligence and developer growth platform.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body className="min-h-full antialiased">
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }

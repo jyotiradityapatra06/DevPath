@@ -28,12 +28,18 @@ export async function saveCareerProfile(payload: ProfilePayload) {
 }
 
 export async function saveCareerGoal(payload: CareerGoalPayload) {
-  const roles = (await apiClient.get<RoleRecord[]>("/api/v1/roles")).data
-  const targetTitle = roleAliases[payload.targetRole] ?? payload.targetRole
-  const role = roles.find((item) => item.title.toLowerCase() === targetTitle.toLowerCase())
-  if (!role) throw new Error(`The ${payload.targetRole} career path is not available yet.`)
+  let targetRoleId = payload.targetRoleId
+  if (!targetRoleId) {
+    if (!payload.targetRole) throw new Error("Target role is required.")
+    const roles = (await apiClient.get<RoleRecord[]>("/api/v1/roles")).data
+    const targetTitle = roleAliases[payload.targetRole] ?? payload.targetRole
+    const role = roles.find((item) => item.title.toLowerCase() === targetTitle.toLowerCase())
+    if (!role) throw new Error(`The ${payload.targetRole} career path is not available yet.`)
+    targetRoleId = role.id
+  }
+
   const body = {
-    target_role_id: role.id,
+    target_role_id: targetRoleId,
     ...(payload.experienceLevel ? { experience_level: payload.experienceLevel } : {}),
     timeline: "6 months",
     ...(payload.learningPreference ? { preferences: payload.learningPreference } : {}),
@@ -50,29 +56,41 @@ export async function saveCareerGoal(payload: CareerGoalPayload) {
 }
 
 export async function saveSkills(payload: SkillSelectionPayload) {
-  const [catalogue, existing] = await Promise.all([
+  const [catalogueResponse, existingResponse] = await Promise.all([
     apiClient.get<SkillRecord[]>("/api/v1/skills"),
     apiClient.get<UserSkillRecord[]>("/api/v1/user-skills"),
   ])
-  const byName = new Map(catalogue.data.map((skill) => [skill.name.toLowerCase(), skill]))
-  const existingIds = new Set(existing.data.map((skill) => skill.skill_id))
+  const catalogue = catalogueResponse.data
+  const existing = existingResponse.data
+  const existingIds = new Set(existing.map((item) => item.skill_id))
   const level = normalizeLevel(payload.experienceLevel)
-  const selected = payload.skills.map((name) => {
-    const skill = byName.get(name.toLowerCase())
-    if (!skill) throw new Error(`${name} is not available in the skill catalogue.`)
-    return skill
-  })
-  const selectedIds = new Set(selected.map((skill) => skill.id))
+
+  let selectedIds: number[] = []
+  if (payload.skillIds && payload.skillIds.length > 0) {
+    selectedIds = payload.skillIds
+  } else if (payload.skills && payload.skills.length > 0) {
+    const byName = new Map(catalogue.map((skill) => [skill.name.toLowerCase(), skill]))
+    selectedIds = payload.skills.map((name) => {
+      const match = byName.get(name.toLowerCase())
+      if (!match) throw new Error(`${name} is not available in the skill catalogue.`)
+      return match.id
+    })
+  }
+
+  const selectedSet = new Set(selectedIds)
   await Promise.all([
-    ...selected.map((skill) => existingIds.has(skill.id)
-      ? apiClient.put(`/api/v1/user-skills/${skill.id}`, { level, status: "IN_PROGRESS" })
-      : apiClient.post("/api/v1/user-skills", { skill_id: skill.id, level, status: "IN_PROGRESS" })),
-    ...existing.data
-      .filter((skill) => !selectedIds.has(skill.skill_id))
-      .map((skill) => apiClient.delete(`/api/v1/user-skills/${skill.skill_id}`)),
+    ...selectedIds.map((id) =>
+      existingIds.has(id)
+        ? apiClient.put(`/api/v1/user-skills/${id}`, { level, status: "IN_PROGRESS" })
+        : apiClient.post("/api/v1/user-skills", { skill_id: id, level, status: "IN_PROGRESS" }),
+    ),
+    ...existing
+      .filter((item) => !selectedSet.has(item.skill_id))
+      .map((item) => apiClient.delete(`/api/v1/user-skills/${item.skill_id}`)),
   ])
-  return selected
+  return selectedIds
 }
+
 
 export async function completeOnboarding() {
   try {

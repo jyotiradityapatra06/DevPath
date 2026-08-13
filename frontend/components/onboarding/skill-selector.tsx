@@ -1,12 +1,13 @@
 "use client"
 
 import { Search, X } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { Input } from "@/components/ui/input"
+import { useSkillsCatalogue, useUserSkills, type BackendSkillItem } from "@/features/skills/hooks/use-skills"
 import { cn } from "@/lib/utils"
 
-const availableSkills = [
+const fallbackCuratedSkills = [
   "Python",
   "JavaScript",
   "TypeScript",
@@ -31,25 +32,70 @@ const availableSkills = [
 
 interface SkillSelectorProps {
   selected: string[]
-  onChange: (skills: string[]) => void
+  selectedSkillIds?: number[]
+  onChange: (skills: string[], skillIds: number[]) => void
 }
 
-export function SkillSelector({ selected, onChange }: SkillSelectorProps) {
+export function SkillSelector({ selected, selectedSkillIds = [], onChange }: SkillSelectorProps) {
   const [query, setQuery] = useState("")
+  const { data: catalogue = [] } = useSkillsCatalogue()
+  const { data: userSkills = [] } = useUserSkills()
+
+  // Hydrate user skills on initial load if none selected yet
+  useEffect(() => {
+    if (userSkills.length > 0 && selected.length === 0 && catalogue.length > 0) {
+      const userSkillIds = new Set(userSkills.map((item) => item.skill_id))
+      const matchedSkills = catalogue.filter((item) => userSkillIds.has(item.id))
+      if (matchedSkills.length > 0) {
+        onChange(
+          matchedSkills.map((item) => item.name),
+          matchedSkills.map((item) => item.id),
+        )
+      }
+    }
+  }, [userSkills, catalogue, selected.length, onChange])
+
+  const availableSkills: Array<{ id?: number; name: string }> = useMemo(() => {
+    if (catalogue.length > 0) {
+      return catalogue.map((item) => ({ id: item.id, name: item.name }))
+    }
+    return fallbackCuratedSkills.map((name) => ({ name }))
+  }, [catalogue])
+
   const filteredSkills = useMemo(
     () =>
-      availableSkills.filter((skill) =>
-        skill.toLowerCase().includes(query.trim().toLowerCase()),
+      availableSkills.filter((item) =>
+        item.name.toLowerCase().includes(query.trim().toLowerCase()),
       ),
-    [query],
+    [availableSkills, query],
   )
 
-  function toggleSkill(skill: string) {
-    onChange(
-      selected.includes(skill)
-        ? selected.filter((item) => item !== skill)
-        : [...selected, skill],
-    )
+  function toggleSkill(item: { id?: number; name: string }) {
+    const isSelected = selected.includes(item.name)
+    let newSelectedNames: string[]
+    let newSelectedIds: number[]
+
+    if (isSelected) {
+      newSelectedNames = selected.filter((name) => name !== item.name)
+      newSelectedIds = selectedSkillIds.filter((id) => id !== item.id)
+    } else {
+      newSelectedNames = [...selected, item.name]
+      if (item.id !== undefined) {
+        newSelectedIds = [...selectedSkillIds.filter((id) => id !== item.id), item.id]
+      } else {
+        newSelectedIds = [...selectedSkillIds]
+      }
+    }
+
+    // Ensure skill IDs align with catalogue
+    if (catalogue.length > 0) {
+      const catalogueMap = new Map(catalogue.map((c) => [c.name, c.id]))
+      newSelectedIds = newSelectedNames
+        .map((name) => catalogueMap.get(name))
+        .filter((id): id is number => id !== undefined)
+    }
+
+    onChange(newSelectedNames, newSelectedIds)
   }
 
   return (
@@ -74,31 +120,34 @@ export function SkillSelector({ selected, onChange }: SkillSelectorProps) {
             <span className="text-xs tabular-nums text-[#71717A]">{selected.length}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {selected.map((skill) => (
-              <button
-                key={skill}
-                type="button"
-                onClick={() => toggleSkill(skill)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/10 px-3 py-1.5 text-xs font-medium text-[#D8CCFF] transition-colors hover:bg-[#8B5CF6]/20"
-              >
-                {skill}
-                <X className="size-3" />
-              </button>
-            ))}
+            {selected.map((skillName) => {
+              const matchedItem = availableSkills.find((item) => item.name === skillName) ?? { name: skillName }
+              return (
+                <button
+                  key={skillName}
+                  type="button"
+                  onClick={() => toggleSkill(matchedItem)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/10 px-3 py-1.5 text-xs font-medium text-[#D8CCFF] transition-colors hover:bg-[#8B5CF6]/20"
+                >
+                  {skillName}
+                  <X className="size-3" />
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
 
       <div className="mt-5 max-h-64 overflow-y-auto pr-1">
         <div className="flex flex-wrap gap-2">
-          {filteredSkills.map((skill) => {
-            const isSelected = selected.includes(skill)
+          {filteredSkills.map((item) => {
+            const isSelected = selected.includes(item.name)
             return (
               <button
-                key={skill}
+                key={item.name}
                 type="button"
                 aria-pressed={isSelected}
-                onClick={() => toggleSkill(skill)}
+                onClick={() => toggleSkill(item)}
                 className={cn(
                   "rounded-full border px-3.5 py-2 text-sm transition-all",
                   isSelected
@@ -107,7 +156,7 @@ export function SkillSelector({ selected, onChange }: SkillSelectorProps) {
                 )}
               >
                 {isSelected && <CheckIcon />}
-                {skill}
+                {item.name}
               </button>
             )
           })}

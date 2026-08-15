@@ -13,6 +13,18 @@ from app.schemas.adaptive_ai import (
 )
 
 
+def _extract_json(content: str) -> dict:
+    text = content.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if lines and lines[0].strip().lower() in {"```", "```json"}:
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+    return json.loads(text)
+
+
 class RoadmapOptimizerService:
 
     def __init__(
@@ -32,7 +44,7 @@ class RoadmapOptimizerService:
                 "{context}", json.dumps(context, default=str)
             )
             response = self.provider.generate(prompt)
-            data = json.loads(response)
+            data = _extract_json(response)
             return RoadmapOptimizationResponse(**data)
         except (json.JSONDecodeError, ValidationError, TypeError) as exc:
             raise RoadmapOptimizationError("Invalid AI roadmap response") from exc

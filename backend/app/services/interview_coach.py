@@ -8,6 +8,18 @@ from app.ai.prompts.interview import INTERVIEW_COACH_PROMPT
 from app.schemas.interview import InterviewPreparationResponse
 
 
+def _extract_json(content: str) -> dict[str, Any]:
+    text = content.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if lines and lines[0].strip().lower() in {"```", "```json"}:
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+    return json.loads(text)
+
+
 class InterviewCoachService:
     def __init__(self, provider: AIProvider) -> None:
         self.provider = provider
@@ -21,7 +33,7 @@ class InterviewCoachService:
                 "{context}", serialized_context
             )
             response = self.provider.generate(prompt)
-            data = json.loads(response)
+            data = _extract_json(response)
             return InterviewPreparationResponse(**data)
         except (json.JSONDecodeError, ValidationError, TypeError) as exc:
             raise InterviewCoachError("Invalid AI interview response") from exc
